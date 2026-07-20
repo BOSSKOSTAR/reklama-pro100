@@ -43,54 +43,69 @@
   </head>
 
 <body>
-<div id="root"></div>
+<!-- Подключаем официальную библиотеку Supabase напрямую -->
+<script src="https://jsdelivr.net"></script>
 
-<!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-    (function (m, e, t, r, i, k, a) {
-        m[i] = m[i] || function () {
-            (m[i].a = m[i].a || []).push(arguments)
-        };
-        m[i].l = 1 * new Date();
-        for (var j = 0; j < document.scripts.length; j++) {
-            if (document.scripts[j].src === r) {
-                return;
-            }
-        }
-        k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
-    })
-    (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-
-    ym(101026698, "init", {
-        trustedDomains: ["poehali.dev"],
-        clickmap: true,
-        trackLinks: true,
-        accurateTrackBounce: true,
-        webvisor: true,
-        trackHash: true
-    });
-</script>
-<noscript>
-    <div><img src="https://mc.yandex.ru/watch/101026698" style="position:absolute; left:-9999px;" alt=""/></div>
-</noscript>
-<!-- /Yandex.Metrika counter -->
 <script>
-// Минималистичный и безопасный перехватчик сети
+// Подтягиваем сохраненные ключи из настроек Netlify
+const supabaseUrl = "https://supabase.co";
+const supabaseKey = "sb_publishable_8lhOpIQKFqhJul0SGVER0w__SY9r6Gz";
+
+const supabase = supabasejs.createClient(supabaseUrl, supabaseKey);
+
+// Перехватываем запросы сайта на авторизацию
 const originalFetch = window.fetch;
 window.fetch = async function(...args) {
     const url = args ? args.toString() : '';
     
-    // Если сайт просит авторизацию или данные с poehali.dev
-    if (url.includes('auth') || url.includes('login') || url.includes('register') || url.includes('poehali.dev')) {
-        // Возвращаем пустой корректный объект в формате JSON, который Remix никогда не сломает
-        return new Response(JSON.stringify({}), {
-            status: 200,
-            headers: { 'Content-Type': 'application/json' }
-        });
+    // Перехват регистрации нового аккаунта
+    if (url.includes('register')) {
+        try {
+            const email = document.querySelector('input[type="email"]')?.value;
+            const password = document.querySelector('input[type="password"]')?.value;
+            
+            if (!email || !password) {
+                alert("Пожалуйста, заполните поля Email и Пароль");
+                return new Response(JSON.stringify({ error: "Empty fields" }), { status: 400 });
+            }
+
+            // Отправляем данные в вашу базу Supabase!
+            const { data, error } = await supabase.auth.signUp({ email, password });
+            
+            if (error) throw error;
+            
+            alert("Регистрация успешна! Проверьте почту для подтверждения или войдите.");
+            window.location.href = '/';
+            return new Response(JSON.stringify({ success: true, user: data.user }), { status: 200 });
+        } catch (err) {
+            alert("Ошибка регистрации в Supabase: " + err.message);
+            return new Response(JSON.stringify({ error: err.message }), { status: 400 });
+        }
     }
+    
+    // Перехват обычного входа (Login)
+    if (url.includes('login') || url.includes('auth')) {
+        try {
+            const email = document.querySelector('input[type="email"]')?.value;
+            const password = document.querySelector('input[type="password"]')?.value;
+            
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            
+            if (error) throw error;
+            
+            localStorage.setItem('isLoggedIn', 'true');
+            window.location.href = '/';
+            return new Response(JSON.stringify({ success: true, token: data.session?.access_token }), { status: 200 });
+        } catch (err) {
+            alert("Ошибка входа в Supabase: " + err.message);
+            return new Response(JSON.stringify({ error: err.message }), { status: 400 });
+        }
+    }
+
     return originalFetch(...args);
 };
 </script>
+
 
 </body>
 </html>
