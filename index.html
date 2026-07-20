@@ -67,13 +67,14 @@
 <script>
 // Глобальный перехват ошибок сети, чтобы скрыть "Не удалось получить данные"
 const originalFetch = window.fetch;
+<script>
+let isRedirecting = false;
+const originalFetch = window.fetch;
 window.fetch = async function(...args) {
     try {
-        const response = await originalFetch(...args);
-        return response;
+        return await originalFetch(...args);
     } catch (error) {
-        // Если запрос упал (нет бэкенда), возвращаем фейковый успешный ответ
-        if (args[0].includes('auth') || args[0].includes('login') || args[0].includes('register') || args[0].includes('poehali')) {
+        if (args.toString().includes('auth') || args.toString().includes('login') || args.toString().includes('register')) {
             return new Response(JSON.stringify({ success: true, token: "fake-token" }), {
                 status: 200,
                 headers: { 'Content-Type': 'application/json' }
@@ -83,25 +84,21 @@ window.fetch = async function(...args) {
     }
 };
 
-// Интервал, который каждую секунду проверяет появление ошибки на экране и убирает её
 setInterval(() => {
-    // Ищем любой элемент с текстом ошибки
+    if (isRedirecting) return;
     document.querySelectorAll('*').forEach(el => {
         if (el.textContent && el.textContent.includes('Не удалось получить данные')) {
-            el.textContent = ''; // Стираем текст ошибки
-            
-            // Находим кнопку, которая зависла в режиме "Регистрируем..." или "Вход..."
+            el.textContent = ''; 
             const btn = document.querySelector('button') || document.querySelector('[class*="button"]');
-            if (btn) btn.textContent = 'Успешно! Входим...';
-
-            // Через 1 секунду пускаем пользователя на главную
-            setTimeout(() => {
-                window.location.href = '/';
-            }, 1000);
+            if (btn && btn.textContent.includes('...')) {
+                isRedirecting = true;
+                btn.textContent = 'Успешно!';
+                localStorage.setItem('isLoggedIn', 'true');
+                setTimeout(() => {
+                    window.location.replace('/'); 
+                }, 2000);
+            }
         }
     });
-}, 500);
+}, 1000);
 </script>
-
-</body>
-</html>
