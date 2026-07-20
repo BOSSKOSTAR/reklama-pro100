@@ -87,8 +87,8 @@ window.fetch = async function(...args) {
 setInterval(() => {
     if (isRedirecting) return;
     document.querySelectorAll('*').forEach(el => {
-        if (el.textContent && el.textContent.includes('Не удалось получить данные')) {
-            el.textContent = ''; 
+        if (el.textContent && (el.textContent.includes('Не удалось получить данные') || el.textContent.includes('Failed to fetch'))) {
+
             const btn = document.querySelector('button') || document.querySelector('[class*="button"]');
             if (btn && btn.textContent.includes('...')) {
                 isRedirecting = true;
