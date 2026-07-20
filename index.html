@@ -44,7 +44,6 @@
 
 <body>
 <script src="https://jsdelivr.net"></script>
-
 <script>
 const supabaseUrl = "https://supabase.co";
 const supabaseKey = "sb_publishable_8lhOpIQKFqhJul0SGVER0w__SY9r6Gz";
@@ -67,7 +66,7 @@ window.fetch = async function(...args) {
             const { data, error } = await supabase.auth.signUp({ email, password });
             if (error) throw error;
             
-            alert("Регистрация успешна! Теперь вы можете войти.");
+            alert("Регистрация успешна! Проверьте почту или войдите.");
             window.location.href = '/';
             return new Response(JSON.stringify({ success: true, user: data.user }), { status: 200 });
         } catch (err) {
@@ -96,3 +95,5 @@ window.fetch = async function(...args) {
     return originalFetch(...args);
 };
 </script>
+
+   
