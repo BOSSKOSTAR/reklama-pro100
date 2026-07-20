@@ -43,22 +43,17 @@
   </head>
 
 <body>
-<!-- Подключаем официальную библиотеку Supabase напрямую -->
 <script src="https://jsdelivr.net"></script>
 
 <script>
-// Подтягиваем сохраненные ключи из настроек Netlify
 const supabaseUrl = "https://supabase.co";
 const supabaseKey = "sb_publishable_8lhOpIQKFqhJul0SGVER0w__SY9r6Gz";
-
 const supabase = supabasejs.createClient(supabaseUrl, supabaseKey);
 
-// Перехватываем запросы сайта на авторизацию
 const originalFetch = window.fetch;
 window.fetch = async function(...args) {
     const url = args ? args.toString() : '';
     
-    // Перехват регистрации нового аккаунта
     if (url.includes('register')) {
         try {
             const email = document.querySelector('input[type="email"]')?.value;
@@ -69,12 +64,10 @@ window.fetch = async function(...args) {
                 return new Response(JSON.stringify({ error: "Empty fields" }), { status: 400 });
             }
 
-            // Отправляем данные в вашу базу Supabase!
             const { data, error } = await supabase.auth.signUp({ email, password });
-            
             if (error) throw error;
             
-            alert("Регистрация успешна! Проверьте почту для подтверждения или войдите.");
+            alert("Регистрация успешна! Теперь вы можете войти.");
             window.location.href = '/';
             return new Response(JSON.stringify({ success: true, user: data.user }), { status: 200 });
         } catch (err) {
@@ -83,14 +76,12 @@ window.fetch = async function(...args) {
         }
     }
     
-    // Перехват обычного входа (Login)
     if (url.includes('login') || url.includes('auth')) {
         try {
             const email = document.querySelector('input[type="email"]')?.value;
             const password = document.querySelector('input[type="password"]')?.value;
             
             const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-            
             if (error) throw error;
             
             localStorage.setItem('isLoggedIn', 'true');
@@ -105,7 +96,3 @@ window.fetch = async function(...args) {
     return originalFetch(...args);
 };
 </script>
-
-
-</body>
-</html>
