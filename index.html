@@ -27,7 +27,17 @@
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS COMMENT! -->
 
     <meta name="pp-name" value="create-project-4">
-      <script src="https://cdn.poehali.dev/intertnal/js/inspector-min.js"></script>
+      <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS COMMENT! -->
+    <script src="https://poehali.dev"></script>
+    <script src="https://poehali.dev"></script>
+    <script src="https://poehali.dev"></script>
+    <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS COMMENT! -->
+
+    <meta name="pp-name" value="create-project-4">
+    <script src="https://poehali.dev"></script>
+    <script type="module" crossorigin src="/assets/index-4uGvJVpT.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-dl8Xu_M0.css">
+</head>
     <script type="module" crossorigin src="/assets/index-4uGVfvPT.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/index-DL8Xu_M0.css">
   </head>
@@ -36,7 +46,7 @@
 <div id="root"></div>
 
 <!-- Yandex.Metrika counter -->
-    <script type="text/javascript">
+<script type="text/javascript">
     (function (m, e, t, r, i, k, a) {
         m[i] = m[i] || function () {
             (m[i].a = m[i].a || []).push(arguments)
@@ -62,26 +72,37 @@
 </script>
 <noscript>
     <div><img src="https://mc.yandex.ru/watch/101026698" style="position:absolute; left:-9999px;" alt=""/></div>
-</noscript>
-
 <script>
-// Жесткий перехват всех сетевых запросов сайта на бэкенд
 const originalFetch = window.fetch;
 window.fetch = async function(...args) {
-    const url = args[0] ? args[0].toString() : '';
+    const url = args ? args.toString() : '';
     
-    // Если сайт пытается зарегистрировать, войти или отправить данные на poehali.dev
-    if (url.includes('auth') || url.includes('login') || url.includes('register') || url.includes('poehali.dev')) {
-        // Возвращаем фейковый успешный ответ от сервера, чтобы React пустил нас дальше
+    // 1. Перехват авторизации (Вход и Регистрация)
+    if (url.includes('auth') || url.includes('login') || url.includes('register') || url.includes('poehali.dev/api/user')) {
         return new Response(JSON.stringify({ 
             success: true, 
             token: "fake-jwt-token-12345",
-            user: { id: 1, name: "VITALII", email: "bezdny80@mail.ru", role: "admin" }
-        }), {
+            user: { id: 1, name: "VITALII", email: "bezdny80@mail.ru", role: "admin", balance: 5000 }
+        }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
+    
+    // 2. Фейковые данные для наполнения пустого кабинета (Кампании, Статистика, Баланс)
+    if (url.includes('campaigns') || url.includes('ads') || url.includes('stats') || url.includes('poehali.dev')) {
+        // Создаем фейковую тестовую кампанию, чтобы кабинет не был пустым
+        const fakeData = [
+            { id: 1, name: "Тестовая Тизерная Реклама №1", status: "active", clicks: 1240, views: 58000, budget: 1500 },
+            { id: 2, name: "Баннерная кампания (Тест)", status: "paused", clicks: 320, views: 12000, budget: 500 }
+        ];
+        
+        // Если роутер просит объект, а не массив, подстраиваемся под Remix
+        const responseData = url.includes('stats') ? { labels: ["Пн", "Вт", "Ср"], data: [100, 200, 300] } : fakeData;
+
+        return new Response(JSON.stringify(responseData), {
             status: 200,
             headers: { 'Content-Type': 'application/json' }
         });
     }
+    
     return originalFetch(...args);
 };
 </script>
