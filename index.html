@@ -72,37 +72,22 @@
 </script>
 <noscript>
     <div><img src="https://mc.yandex.ru/watch/101026698" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript>
+<!-- /Yandex.Metrika counter -->
 <script>
+// Минималистичный и безопасный перехватчик сети
 const originalFetch = window.fetch;
 window.fetch = async function(...args) {
     const url = args ? args.toString() : '';
     
-    // 1. Перехват авторизации (Вход и Регистрация)
-    if (url.includes('auth') || url.includes('login') || url.includes('register') || url.includes('poehali.dev/api/user')) {
-        return new Response(JSON.stringify({ 
-            success: true, 
-            token: "fake-jwt-token-12345",
-            user: { id: 1, name: "VITALII", email: "bezdny80@mail.ru", role: "admin", balance: 5000 }
-        }), { status: 200, headers: { 'Content-Type': 'application/json' } });
-    }
-    
-    // 2. Фейковые данные для наполнения пустого кабинета (Кампании, Статистика, Баланс)
-    if (url.includes('campaigns') || url.includes('ads') || url.includes('stats') || url.includes('poehali.dev')) {
-        // Создаем фейковую тестовую кампанию, чтобы кабинет не был пустым
-        const fakeData = [
-            { id: 1, name: "Тестовая Тизерная Реклама №1", status: "active", clicks: 1240, views: 58000, budget: 1500 },
-            { id: 2, name: "Баннерная кампания (Тест)", status: "paused", clicks: 320, views: 12000, budget: 500 }
-        ];
-        
-        // Если роутер просит объект, а не массив, подстраиваемся под Remix
-        const responseData = url.includes('stats') ? { labels: ["Пн", "Вт", "Ср"], data: [100, 200, 300] } : fakeData;
-
-        return new Response(JSON.stringify(responseData), {
+    // Если сайт просит авторизацию или данные с poehali.dev
+    if (url.includes('auth') || url.includes('login') || url.includes('register') || url.includes('poehali.dev')) {
+        // Возвращаем пустой корректный объект в формате JSON, который Remix никогда не сломает
+        return new Response(JSON.stringify({}), {
             status: 200,
             headers: { 'Content-Type': 'application/json' }
         });
     }
-    
     return originalFetch(...args);
 };
 </script>
