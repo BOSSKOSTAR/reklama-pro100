@@ -137,8 +137,17 @@
 </div>
 
 <script>
-  // Привязываем клик к нашей кнопке напрямую
-  document.getElementById('sb-btn').addEventListener('click', async () => {
+  // 1. Инициализация базы данных Supabase (Исправленный синтаксис для CDN)
+  const supabaseUrl = 'https://ufbgntrdlenctmzlqqhk.supabase.co';
+  const supabaseKey = 'sb_publishable_8lh0pIQKFqHJul0SGvER0w__SY9r6Gm';
+  
+  // Правильное обращение к CDN библиотеке
+  const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+  // 2. Обработчик нажатия на кнопку
+  document.getElementById('sb-btn').addEventListener('click', async (event) => {
+    event.preventDefault(); // Полностью блокируем любые другие скрипты на странице
+
     const name = document.getElementById('sb-name').value;
     const email = document.getElementById('sb-email').value;
     const password = document.getElementById('sb-password').value;
@@ -148,19 +157,27 @@
       return;
     }
 
-    alert('Отправка в Supabase...');
+    console.log('Отправка данных в Supabase...');
     
-    // Вызываем функцию signUp напрямую из библиотеки Supabase
+    // Вызываем функцию signUp напрямую из рабочего клиента
     const { data, error } = await supabaseClient.auth.signUp({
         email: email,
         password: password,
+        options: {
+            data: {
+                display_name: name
+            }
+        }
     });
 
     if (error) { 
-        alert('Ошибка базы: ' + error.message); 
+        alert('Ошибка базы Supabase: ' + error.message); 
+        console.error(error);
     } else if (data.user) { 
-        alert('УРА! Пользователь успешно создан в Supabase!'); 
+        alert('УРА! Пользователь успешно создан в Supabase! Проверьте таблицу Users.'); 
+        console.log('Создан пользователь:', data.user);
     }
-  </script>
+  });
+</script>
 </body>
 </html>
