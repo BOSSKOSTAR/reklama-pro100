@@ -65,19 +65,50 @@
 </noscript>
 <!-- /Yandex.Metrika counter -->
  <script>
-  // Ждем, пока сайт полностью загрузится в браузере
+  // 1. Инициализация базы данных Supabase напрямую в коде страницы
+  const supabaseUrl = 'https://supabase.co';
+  const supabaseKey = 'sb_publishable_8lh0pIQKFqHJul0SGvER0w__SY9r6Gm';
+  const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+  // 2. Функция для отправки данных регистрации нового пользователя
+  async function registerUser(email, password, name) {
+    const { data, error } = await supabaseClient.auth.signUp({
+        email: email,
+        password: password,
+    });
+    if (error) { 
+        alert('Ошибка регистрации: ' + error.message); 
+        return; 
+    }
+    if (data.user) { 
+        alert('Успешно! Пользователь зарегистрирован в Supabase.'); 
+    }
+  }
+
+  // 3. Функция для входа существующего пользователя
+  async function loginUser(email, password) {
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password,
+    });
+    if (error) { 
+        alert('Ошибка входа: ' + error.message); 
+        return; 
+    }
+    if (data.user) { 
+        alert('Вы успешно вошли через Supabase!'); 
+    }
+  }
+
+  // 4. Автоматический перехват нажатий кнопок на сайте
   document.addEventListener('DOMContentLoaded', () => {
-    
-    // Перехватываем отправку любой формы на сайте
     document.addEventListener('submit', async (event) => {
-      // Останавливаем стандартную отправку в старый конструктор
-      event.preventDefault(); 
+      event.preventDefault(); // Останавливаем отправку на старый сервер конструктора
       
       const form = event.target;
-      // Находим поля ввода внутри формы
       const emailInput = form.querySelector('input[type="email"]');
       const passwordInput = form.querySelector('input[type="password"]');
-      const nameInput = form.querySelector('input[type="text"]'); // обычно имя/логин
+      const nameInput = form.querySelector('input[type="text"]');
       
       if (!emailInput || !passwordInput) return;
 
@@ -85,17 +116,13 @@
       const password = passwordInput.value;
       const name = nameInput ? nameInput.value : 'Пользователь TizerPro';
 
-      // Проверяем, какая это форма: Регистрация или Вход
-      // Если в форме есть поле для имени или кнопка содержит текст "Рег" — это регистрация
+      // Проверяем, нажал ли пользователь Вход или Регистрацию
       if (nameInput || form.innerText.includes('Регистрация')) {
-        console.log('Перехват регистрации в Supabase...');
         await registerUser(email, password, name);
       } else {
-        console.log('Перехват входа в Supabase...');
         await loginUser(email, password);
       }
     });
-
   });
 </script>
 </body>
