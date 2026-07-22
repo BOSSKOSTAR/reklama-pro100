@@ -27,11 +27,10 @@
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS COMMENT! -->
 
     <meta name="pp-name" value="create-project-4">
-    <base href="/reklama-pro100/">
       <script src="https://cdn.poehali.dev/intertnal/js/inspector-min.js"></script>
-    <script type="module" crossorigin src="assets/index-CvcMN_y8.js"></script>
-    <link rel="stylesheet" crossorigin href="assets/index-Cck4tbFq.css">
-  </head>
+    <script type="module" crossorigin src="/assets/index-CvcMN_y8.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Cck4tbFq.css">
+</head>
 
 <body>
 <div id="root"></div>
@@ -65,5 +64,39 @@
     <div><img src="https://mc.yandex.ru/watch/101026698" style="position:absolute; left:-9999px;" alt=""/></div>
 </noscript>
 <!-- /Yandex.Metrika counter -->
+ <script>
+  // Ждем, пока сайт полностью загрузится в браузере
+  document.addEventListener('DOMContentLoaded', () => {
+    
+    // Перехватываем отправку любой формы на сайте
+    document.addEventListener('submit', async (event) => {
+      // Останавливаем стандартную отправку в старый конструктор
+      event.preventDefault(); 
+      
+      const form = event.target;
+      // Находим поля ввода внутри формы
+      const emailInput = form.querySelector('input[type="email"]');
+      const passwordInput = form.querySelector('input[type="password"]');
+      const nameInput = form.querySelector('input[type="text"]'); // обычно имя/логин
+      
+      if (!emailInput || !passwordInput) return;
+
+      const email = emailInput.value;
+      const password = passwordInput.value;
+      const name = nameInput ? nameInput.value : 'Пользователь TizerPro';
+
+      // Проверяем, какая это форма: Регистрация или Вход
+      // Если в форме есть поле для имени или кнопка содержит текст "Рег" — это регистрация
+      if (nameInput || form.innerText.includes('Регистрация')) {
+        console.log('Перехват регистрации в Supabase...');
+        await registerUser(email, password, name);
+      } else {
+        console.log('Перехват входа в Supabase...');
+        await loginUser(email, password);
+      }
+    });
+
+  });
+</script>
 </body>
 </html>
