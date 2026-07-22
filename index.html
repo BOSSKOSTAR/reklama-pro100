@@ -127,46 +127,38 @@
     });
   });
 </script>
-<!-- Наша собственная чистая форма регистрации для Supabase -->
-<div style="position: fixed; bottom: 20px; left: 20px; background: #1e1e1e; padding: 20px; border: 2px solid gold; border-radius: 8px; z-index: 99999; color: white; width: 300px;">
-  <h3 style="margin-top: 0; color: gold;">Тест Supabase (Регистрация)</h3>
-  <input type="text" id="sb-name" placeholder="Имя" style="width: 100%; margin-bottom: 10px; padding: 5px; color: black;"><br>
-  <input type="email" id="sb-email" placeholder="Email" style="width: 100%; margin-bottom: 10px; padding: 5px; color: black;"><br>
-  <input type="password" id="sb-password" placeholder="Пароль (от 6 знаков)" style="width: 100%; margin-bottom: 10px; padding: 5px; color: black;"><br>
-  <button id="sb-btn" style="width: 100%; padding: 8px; background: gold; color: black; font-weight: bold; border: none; cursor: pointer;">Зарегистрироваться</button>
-</div>
-
-<!-- Наша собственная чистая форма регистрации для Supabase -->
-<div style="position: fixed; bottom: 20px; left: 20px; background: #1e1e1e; padding: 20px; border: 2px solid gold; border-radius: 8px; z-index: 99999; color: white; width: 300px;">
-  <h3 style="margin-top: 0; color: gold;">Тест Supabase (Регистрация)</h3>
-  <input type="text" id="sb-name" placeholder="Имя" style="width: 100%; margin-bottom: 10px; padding: 5px; color: black;"><br>
-  <input type="email" id="sb-email" placeholder="Email" style="width: 100%; margin-bottom: 10px; padding: 5px; color: black;"><br>
-  <input type="password" id="sb-password" placeholder="Пароль (от 6 знаков)" style="width: 100%; margin-bottom: 10px; padding: 5px; color: black;"><br>
-  <!-- Мы привязали функцию прямо на клик через onclick, это обойдет любые запреты конструктора -->
-  <button onclick="sendToSupabase(event)" style="width: 100%; padding: 8px; background: gold; color: black; font-weight: bold; border: none; cursor: pointer;">Зарегистрироваться</button>
+<!-- Наша собственная чистая кнопка для прямой проверки базы данных -->
+<div style="position: fixed; bottom: 20px; left: 20px; background: #1e1e1e; padding: 20px; border: 2px solid gold; border-radius: 8px; z-index: 99999; color: white; width: 300px; text-align: center;">
+  <h3 style="margin-top: 0; color: gold;">Прямой тест Supabase</h3>
+  <p style="font-size: 12px; margin-bottom: 15px;">Этот метод обойдет любые защиты и блокировки сайта.</p>
+  <button onclick="startDirectRegistration(event)" style="width: 100%; padding: 10px; background: gold; color: black; font-weight: bold; border: none; cursor: pointer; border-radius: 4px;">🎯 Начать регистрацию</button>
 </div>
 
 <script>
-  // Инициализация базы данных Supabase
+  // Инициализация базы данных Supabase напрямую
   const supabaseUrl = 'https://ufbgntrdlenctmzlqqhk.supabase.co';
   const supabaseKey = 'sb_publishable_8lh0pIQKFqHJul0SGvER0w__SY9r6Gm';
   const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-  async function sendToSupabase(event) {
-    // Останавливаем любые другие скрипты на сайте полностью
+  async function startDirectRegistration(event) {
+    // Полностью изолируем клик от конструктора сайта
     event.preventDefault();
     event.stopPropagation();
 
-    const name = document.getElementById('sb-name').value;
-    const email = document.getElementById('sb-email').value;
-    const password = document.getElementById('sb-password').value;
+    // Запрашиваем данные напрямую у пользователя через системные окна
+    const name = prompt("Введите ваше Имя:");
+    if (name === null) return; // Если нажали Отмена
 
-    if (!email || !password) {
-      alert('Заполните Email и Пароль!');
-      return;
+    const email = prompt("Введите ваш Email:");
+    if (!email) { alert("Email не может быть пустым!"); return; }
+
+    const password = prompt("Введите Пароль (не менее 6 символов):");
+    if (!password || password.length < 6) { 
+      alert("Пароль слишком короткий или пустой! Нужно минимум 6 символов."); 
+      return; 
     }
 
-    alert('Начинаем прямую отправку в Supabase...');
+    alert('Все данные получены! Отправляем запрос напрямую в базу данных Supabase...');
 
     try {
       const { data, error } = await supabaseClient.auth.signUp({
@@ -179,11 +171,14 @@
 
       if (error) { 
           alert('Ошибка базы Supabase: ' + error.message); 
+          console.error(error);
       } else if (data.user) { 
-          alert('УРА! Пользователь успешно создан в Supabase! Проверьте вкладку Users.'); 
+          alert('УРА! КОД СРАБОТАЛ! Пользователь с почтой ' + email + ' официально создан в вашей базе Supabase!'); 
+          console.log('Данные созданного пользователя:', data.user);
       }
     } catch (err) {
       alert('Критическая ошибка скрипта: ' + err.message);
+      console.error(err);
     }
   }
 </script>
