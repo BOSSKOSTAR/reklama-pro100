@@ -136,17 +136,26 @@
   <button id="sb-btn" style="width: 100%; padding: 8px; background: gold; color: black; font-weight: bold; border: none; cursor: pointer;">Зарегистрироваться</button>
 </div>
 
+<!-- Наша собственная чистая форма регистрации для Supabase -->
+<div style="position: fixed; bottom: 20px; left: 20px; background: #1e1e1e; padding: 20px; border: 2px solid gold; border-radius: 8px; z-index: 99999; color: white; width: 300px;">
+  <h3 style="margin-top: 0; color: gold;">Тест Supabase (Регистрация)</h3>
+  <input type="text" id="sb-name" placeholder="Имя" style="width: 100%; margin-bottom: 10px; padding: 5px; color: black;"><br>
+  <input type="email" id="sb-email" placeholder="Email" style="width: 100%; margin-bottom: 10px; padding: 5px; color: black;"><br>
+  <input type="password" id="sb-password" placeholder="Пароль (от 6 знаков)" style="width: 100%; margin-bottom: 10px; padding: 5px; color: black;"><br>
+  <!-- Мы привязали функцию прямо на клик через onclick, это обойдет любые запреты конструктора -->
+  <button onclick="sendToSupabase(event)" style="width: 100%; padding: 8px; background: gold; color: black; font-weight: bold; border: none; cursor: pointer;">Зарегистрироваться</button>
+</div>
+
 <script>
-  // 1. Инициализация базы данных Supabase (Исправленный синтаксис для CDN)
+  // Инициализация базы данных Supabase
   const supabaseUrl = 'https://ufbgntrdlenctmzlqqhk.supabase.co';
   const supabaseKey = 'sb_publishable_8lh0pIQKFqHJul0SGvER0w__SY9r6Gm';
-  
-  // Правильное обращение к CDN библиотеке
   const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-  // 2. Обработчик нажатия на кнопку
-  document.getElementById('sb-btn').addEventListener('click', async (event) => {
-    event.preventDefault(); // Полностью блокируем любые другие скрипты на странице
+  async function sendToSupabase(event) {
+    // Останавливаем любые другие скрипты на сайте полностью
+    event.preventDefault();
+    event.stopPropagation();
 
     const name = document.getElementById('sb-name').value;
     const email = document.getElementById('sb-email').value;
@@ -157,27 +166,26 @@
       return;
     }
 
-    console.log('Отправка данных в Supabase...');
-    
-    // Вызываем функцию signUp напрямую из рабочего клиента
-    const { data, error } = await supabaseClient.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-            data: {
-                display_name: name
-            }
-        }
-    });
+    alert('Начинаем прямую отправку в Supabase...');
 
-    if (error) { 
-        alert('Ошибка базы Supabase: ' + error.message); 
-        console.error(error);
-    } else if (data.user) { 
-        alert('УРА! Пользователь успешно создан в Supabase! Проверьте таблицу Users.'); 
-        console.log('Создан пользователь:', data.user);
+    try {
+      const { data, error } = await supabaseClient.auth.signUp({
+          email: email,
+          password: password,
+          options: {
+              data: { display_name: name }
+          }
+      });
+
+      if (error) { 
+          alert('Ошибка базы Supabase: ' + error.message); 
+      } else if (data.user) { 
+          alert('УРА! Пользователь успешно создан в Supabase! Проверьте вкладку Users.'); 
+      }
+    } catch (err) {
+      alert('Критическая ошибка скрипта: ' + err.message);
     }
-  });
+  }
 </script>
 </body>
 </html>
