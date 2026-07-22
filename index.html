@@ -27,73 +27,42 @@
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS COMMENT! -->
 
     <meta name="pp-name" value="create-project-4">
-      <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS COMMENT! -->
-    <script src="https://poehali.dev"></script>
-    <script src="https://poehali.dev"></script>
-    <script src="https://poehali.dev"></script>
-    <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS COMMENT! -->
-
-    <meta name="pp-name" value="create-project-4">
-    <script src="https://poehali.dev"></script>
-    <script type="module" crossorigin src="/assets/index-4uGvJVpT.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-dl8Xu_M0.css">
-</head>
-    <script type="module" crossorigin src="/assets/index-4uGVfvPT.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-DL8Xu_M0.css">
-  </head>
+      <script src="https://cdn.poehali.dev/intertnal/js/inspector-min.js"></script>
+    <script type="module" crossorigin src="/assets/index-CvcMN_y8.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Cck4tbFq.css">
+  <head>
 
 <body>
-<script src="https://jsdelivr.net"></script>
-<script>
-const supabaseUrl = "https://supabase.co";
-const supabaseKey = "sb_publishable_8lhOpIQKFqhJul0SGVER0w__SY9r6Gz";
-const supabase = supabasejs.createClient(supabaseUrl, supabaseKey);
+<div id="root"></div>
 
-const originalFetch = window.fetch;
-window.fetch = async function(...args) {
-    const url = args ? args.toString() : '';
-    
-    if (url.includes('register')) {
-        try {
-            const email = document.querySelector('input[type="email"]')?.value;
-            const password = document.querySelector('input[type="password"]')?.value;
-            
-            if (!email || !password) {
-                alert("Пожалуйста, заполните поля Email и Пароль");
-                return new Response(JSON.stringify({ error: "Empty fields" }), { status: 400 });
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function (m, e, t, r, i, k, a) {
+        m[i] = m[i] || function () {
+            (m[i].a = m[i].a || []).push(arguments)
+        };
+        m[i].l = 1 * new Date();
+        for (var j = 0; j < document.scripts.length; j++) {
+            if (document.scripts[j].src === r) {
+                return;
             }
-
-            const { data, error } = await supabase.auth.signUp({ email, password });
-            if (error) throw error;
-            
-            alert("Регистрация успешна! Проверьте почту или войдите.");
-            window.location.href = '/';
-            return new Response(JSON.stringify({ success: true, user: data.user }), { status: 200 });
-        } catch (err) {
-            alert("Ошибка регистрации в Supabase: " + err.message);
-            return new Response(JSON.stringify({ error: err.message }), { status: 400 });
         }
-    }
-    
-    if (url.includes('login') || url.includes('auth')) {
-        try {
-            const email = document.querySelector('input[type="email"]')?.value;
-            const password = document.querySelector('input[type="password"]')?.value;
-            
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-            if (error) throw error;
-            
-            localStorage.setItem('isLoggedIn', 'true');
-            window.location.href = '/';
-            return new Response(JSON.stringify({ success: true, token: data.session?.access_token }), { status: 200 });
-        } catch (err) {
-            alert("Ошибка входа в Supabase: " + err.message);
-            return new Response(JSON.stringify({ error: err.message }), { status: 400 });
-        }
-    }
+        k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
+    })
+    (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
-    return originalFetch(...args);
-};
+    ym(101026698, "init", {
+        trustedDomains: ["poehali.dev"],
+        clickmap: true,
+        trackLinks: true,
+        accurateTrackBounce: true,
+        webvisor: true,
+        trackHash: true
+    });
 </script>
-
-   
+<noscript>
+    <div><img src="https://mc.yandex.ru/watch/101026698" style="position:absolute; left:-9999px;" alt=""/></div>
+</noscript>
+<!-- /Yandex.Metrika counter -->
+</body>
+</html>
